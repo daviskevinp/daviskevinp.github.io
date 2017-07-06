@@ -4,18 +4,49 @@
 @import 'libs/skel';
 
 /*
-	Phantom by HTML5 UP
+	Read Only by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
+/* Basic */
+
+	code,
+	input[type="text"],
+	input[type="password"],
+	input[type="email"],
+	select,
+	textarea,
+	.box,
+	.image,
+	.image img,
+	input[type="submit"],
+	input[type="reset"],
+	input[type="button"],
+	.button {
+		position: relative;
+		-ms-behavior: url('assets/js/ie/PIE.htc');
+	}
+
 /* Form */
 
-	form {
-		.field {
-			float: none !important;
-			width: 100% !important;
-			padding-left: 0 !important;
+	input[type="text"],
+	input[type="password"],
+	input[type="email"],
+	select {
+		line-height: _size(element-height);
+	}
+
+	input[type="checkbox"],
+	input[type="radio"] {
+		@include vendor('appearance', 'normal');
+
+		& + label {
+			padding: 0 0 0 1.5em;
+
+			&:before {
+				display: none;
+			}
 		}
 	}
 
@@ -24,69 +55,8 @@
 	input[type="submit"],
 	input[type="reset"],
 	input[type="button"],
-	button,
 	.button {
-		border: solid 2px _palette(fg) !important;
-
-		&:hover {
-			border-color: _palette(accent1) !important;
-		}
-
-		&.special {
-			border: none !important;
-		}
-	}
-
-/* Tiles */
-
-	.tiles {
-		article {
-			> .image {
-				&:before, &:after {
-					display: none;
-				}
-			}
-		}
-	}
-
-/* Header */
-
-	#header {
-		.logo {
-			.symbol {
-				display: none;
-			}
-		}
-
-		nav {
-			ul {
-				li {
-					a[href="#menu"] {
-						text-indent: 0;
-						width: auto;
-						font-size: 0.8em;
-
-						&:before, &:after {
-							display: none;
-						}
-					}
-				}
-			}
-		}
-	}
-
-/* Footer */
-
-	#footer {
-		> .inner {
-			section {
-				width: 50%;
-				margin-left: 3em;
-
-				&:first-child {
-					margin-left: 0;
-					width: 40%;
-				}
-			}
+		&.alt {
+			border: solid _size(border-width) _palette(border2);
 		}
 	}

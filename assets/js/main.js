@@ -1,5 +1,5 @@
 /*
-	Phantom by HTML5 UP
+	Read Only by HTML5 UP
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
@@ -7,92 +7,22 @@
 (function($) {
 
 	skel.breakpoints({
-		xlarge:	'(max-width: 1680px)',
-		large:	'(max-width: 1280px)',
-		medium:	'(max-width: 980px)',
-		small:	'(max-width: 736px)',
-		xsmall:	'(max-width: 480px)'
+		xlarge: '(max-width: 1680px)',
+		large: '(max-width: 1280px)',
+		medium: '(max-width: 1024px)',
+		small: '(max-width: 736px)',
+		xsmall: '(max-width: 480px)'
 	});
 
 	$(function() {
 
-		var	$window = $(window),
-			$body = $('body');
+		var $body = $('body'),
+			$header = $('#header'),
+			$nav = $('#nav'), $nav_a = $nav.find('a'),
+			$wrapper = $('#wrapper');
 
-		// Disable animations/transitions until the page has loaded.
-			$body.addClass('is-loading');
-
-			$window.on('load', function() {
-				window.setTimeout(function() {
-					$body.removeClass('is-loading');
-				}, 100);
-			});
-
-		// Touch?
-			if (skel.vars.mobile)
-				$body.addClass('is-touch');
-
-		// Forms.
-			var $form = $('form');
-
-			// Auto-resizing textareas.
-				$form.find('textarea').each(function() {
-
-					var $this = $(this),
-						$wrapper = $('<div class="textarea-wrapper"></div>'),
-						$submits = $this.find('input[type="submit"]');
-
-					$this
-						.wrap($wrapper)
-						.attr('rows', 1)
-						.css('overflow', 'hidden')
-						.css('resize', 'none')
-						.on('keydown', function(event) {
-
-							if (event.keyCode == 13
-							&&	event.ctrlKey) {
-
-								event.preventDefault();
-								event.stopPropagation();
-
-								$(this).blur();
-
-							}
-
-						})
-						.on('blur focus', function() {
-							$this.val($.trim($this.val()));
-						})
-						.on('input blur focus --init', function() {
-
-							$wrapper
-								.css('height', $this.height());
-
-							$this
-								.css('height', 'auto')
-								.css('height', $this.prop('scrollHeight') + 'px');
-
-						})
-						.on('keyup', function(event) {
-
-							if (event.keyCode == 9)
-								$this
-									.select();
-
-						})
-						.triggerHandler('--init');
-
-					// Fix.
-						if (skel.vars.browser == 'ie'
-						||	skel.vars.mobile)
-							$this
-								.css('max-height', '10em')
-								.css('overflow-y', 'auto');
-
-				});
-
-			// Fix: Placeholder polyfill.
-				$form.placeholder();
+		// Fix: Placeholder polyfill.
+			$('form').placeholder();
 
 		// Prioritize "important" elements on medium.
 			skel.on('+medium -medium', function() {
@@ -102,98 +32,81 @@
 				);
 			});
 
-		// Menu.
-			var $menu = $('#menu');
+		// Header.
+			var ids = [];
 
-			$menu.wrapInner('<div class="inner"></div>');
+			// Set up nav items.
+				$nav_a
+					.scrolly({ offset: 44 })
+					.on('click', function(event) {
 
-			$menu._locked = false;
+						var $this = $(this),
+							href = $this.attr('href');
 
-			$menu._lock = function() {
+						// Not an internal link? Bail.
+							if (href.charAt(0) != '#')
+								return;
 
-				if ($menu._locked)
-					return false;
+						// Prevent default behavior.
+							event.preventDefault();
 
-				$menu._locked = true;
+						// Remove active class from all links and mark them as locked (so scrollzer leaves them alone).
+							$nav_a
+								.removeClass('active')
+								.addClass('scrollzer-locked');
 
-				window.setTimeout(function() {
-					$menu._locked = false;
-				}, 350);
+						// Set active class on this link.
+							$this.addClass('active');
 
-				return true;
+					})
+					.each(function() {
 
-			};
+						var $this = $(this),
+							href = $this.attr('href'),
+							id;
 
-			$menu._show = function() {
+						// Not an internal link? Bail.
+							if (href.charAt(0) != '#')
+								return;
 
-				if ($menu._lock())
-					$body.addClass('is-menu-visible');
+						// Add to scrollzer ID list.
+							id = href.substring(1);
+							$this.attr('id', id + '-link');
+							ids.push(id);
 
-			};
+					});
 
-			$menu._hide = function() {
+			// Initialize scrollzer.
+				$.scrollzer(ids, { pad: 300, lastHack: true });
 
-				if ($menu._lock())
-					$body.removeClass('is-menu-visible');
+		// Off-Canvas Navigation.
 
-			};
+			// Title Bar.
+				$(
+					'<div id="titleBar">' +
+						'<a href="#header" class="toggle"></a>' +
+						'<span class="title">' + $('#logo').html() + '</span>' +
+					'</div>'
+				)
+					.appendTo($body);
 
-			$menu._toggle = function() {
+			// Header.
+				$('#header')
+					.panel({
+						delay: 500,
+						hideOnClick: true,
+						hideOnSwipe: true,
+						resetScroll: true,
+						resetForms: true,
+						side: 'right',
+						target: $body,
+						visibleClass: 'header-visible'
+					});
 
-				if ($menu._lock())
-					$body.toggleClass('is-menu-visible');
-
-			};
-
-			$menu
-				.appendTo($body)
-				.on('click', function(event) {
-					event.stopPropagation();
-				})
-				.on('click', 'a', function(event) {
-
-					var href = $(this).attr('href');
-
-					event.preventDefault();
-					event.stopPropagation();
-
-					// Hide.
-						$menu._hide();
-
-					// Redirect.
-						if (href == '#menu')
-							return;
-
-						window.setTimeout(function() {
-							window.location.href = href;
-						}, 350);
-
-				})
-				.append('<a class="close" href="#menu">Close</a>');
-
-			$body
-				.on('click', 'a[href="#menu"]', function(event) {
-
-					event.stopPropagation();
-					event.preventDefault();
-
-					// Toggle.
-						$menu._toggle();
-
-				})
-				.on('click', function(event) {
-
-					// Hide.
-						$menu._hide();
-
-				})
-				.on('keydown', function(event) {
-
-					// Hide on escape.
-						if (event.keyCode == 27)
-							$menu._hide();
-
-				});
+			// Fix: Remove navPanel transitions on WP<10 (poor/buggy performance).
+				if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
+					$('#titleBar, #header, #wrapper')
+						.css('transition', 'none');
 
 	});
 
